@@ -36,8 +36,15 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+
+      // add these:
+      'react/destructuring-assignment': 'off',
+      'react/jsx-one-expression-per-line': 'off',
+      'jsx-a11y/click-events-have-key-events': 'off',
+      'jsx-a11y/no-noninteractive-element-interactions': 'off',
     },
   },
+
   {
     files: ['cypress/**/*.{js,jsx}'],
     languageOptions: {
