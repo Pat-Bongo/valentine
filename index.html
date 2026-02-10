@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine? ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffc3e1 50%, #ff6b9d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating hearts animation */
+        .heart-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            animation: float 15s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background: white;
+            padding: 50px 60px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        h1 {
+            color: #e91e63;
+            font-size: 42px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .message {
+            color: #555;
+            font-size: 20px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #ff6b9d, #e91e63);
+            color: white;
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+        }
+
+        .no-btn {
+            background: #f0f0f0;
+            color: #666;
+            position: relative;
+        }
+
+        .no-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .response {
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .response.show {
+            opacity: 1;
+        }
+
+        .response.happy {
+            color: #e91e63;
+            animation: celebrate 1s ease;
+        }
+
+        @keyframes celebrate {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.2) rotate(-5deg);
+            }
+            75% {
+                transform: scale(1.2) rotate(5deg);
+            }
+        }
+
+        .sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: gold;
+            border-radius: 50%;
+            animation: sparkle 1s ease-out forwards;
+        }
+
+        @keyframes sparkle {
+            0% {
+                transform: scale(0) translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) translate(var(--tx), var(--ty));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="heart-bg" id="heartBg"></div>
+    <div class="sparkles" id="sparkles"></div>
+    
+    <div class="container">
+        <div class="emoji">💕</div>
+        <h1>Will You Be My Valentine?</h1>
+        <p class="message">
+            I've been thinking about this for a while...<br>
+            Would you make me the happiest person and be my Valentine? 🌹
+        </p>
+        <div class="buttons">
+            <button class="yes-btn" onclick="handleYes()">Yes! 💖</button>
+            <button class="no-btn" id="noBtn" onclick="handleNo()">No</button>
+        </div>
+        <div class="response" id="response"></div>
+    </div>
+
+    <script>
+        // Create floating hearts background
+        function createHearts() {
+            const heartBg = document.getElementById('heartBg');
+            const hearts = ['❤️', '💕', '💖', '💗', '💝', '💞'];
+            
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                heartBg.appendChild(heart);
+            }
+        }
+
+        createHearts();
+
+        function handleYes() {
+            const response = document.getElementById('response');
+            response.textContent = '🎉 Yay! You made my day! 🎉';
+            response.className = 'response show happy';
+            
+            // Create sparkles effect
+            createSparkles();
+            
+            // Hide buttons
+            setTimeout(() => {
+                document.querySelector('.buttons').style.display = 'none';
+            }, 500);
+        }
+
+        function handleNo() {
+            const noBtn = document.getElementById('noBtn');
+            const response = document.getElementById('response');
+            
+            // Make the "No" button run away
+            const x = Math.random() * 200 - 100;
+            const y = Math.random() * 200 - 100;
+            
+            noBtn.style.position = 'relative';
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+            
+            // Show a playful message
+            response.textContent = '🤔 The "No" button seems to be shy...';
+            response.className = 'response show';
+            
+            // Make it harder to click "No" button
+            setTimeout(() => {
+                response.textContent = '💭 Maybe try the other button? 😊';
+            }, 1500);
+        }
+
+        function createSparkles() {
+            const sparklesContainer = document.getElementById('sparkles');
+            
+            for (let i = 0; i < 30; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                
+                const tx = (Math.random() - 0.5) * 300;
+                const ty = (Math.random() - 0.5) * 300;
+                
+                sparkle.style.setProperty('--tx', tx + 'px');
+                sparkle.style.setProperty('--ty', ty + 'px');
+                sparkle.style.left = '50%';
+                sparkle.style.top = '50%';
+                
+                sparklesContainer.appendChild(sparkle);
+                
+                setTimeout(() => sparkle.remove(), 1000);
+            }
+        }
+    </script>
+</body>
+</html>
