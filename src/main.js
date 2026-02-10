@@ -4,7 +4,7 @@ import confetti from 'canvas-confetti';
 document.querySelector('#app').innerHTML = `
   <div class="container">
     <div class="media-container" id="media-container">
-      <video id="main-video" autoplay loop muted playsinline preload="auto">
+      <video id="main-video" autoplay loop muted playsinline preload="metadata" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect fill='%23f0f0f0' width='300' height='300'/%3E%3C/svg%3E">
         <source src="/media/vid.MP4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
@@ -115,8 +115,19 @@ yesBtn.addEventListener('click', () => {
   yesBtn.style.display = 'none'; // Remove Yes button too or keep it? Plan said remove No. Let's remove both for cleaner look or just text.
   // Actually, usually we remove the buttons.
 
-  // Swap Media
-  mediaContainer.innerHTML = `<img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b3RuMm41c3dkZXdqNHlmMnRrZ3Z5cWU3NGE5bzdqc2J0MWVraGF47ZlcD12MV9naWZzXNlYXJjaCZjdD1n/3rgXBxX4myufzT6N2w/giphy.gif" alt="Celebration GIF">`;
+  // Swap Media with loading state
+  mediaContainer.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #999;">Loading...</div>`;
+
+  // Preload the GIF
+  const celebrationGif = new Image();
+  celebrationGif.onload = () => {
+    mediaContainer.innerHTML = `<img src="${celebrationGif.src}" alt="Celebration GIF">`;
+  };
+  celebrationGif.onerror = () => {
+    // Fallback to alternative Giphy URL
+    celebrationGif.src = 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnRhZGQyYnV3Z2s0NWRhcTU2ZzZkYm9uN3E5ZGp5YWExa2JheXBkbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rgXBxX4myufzT6N2w/giphy.gif';
+  };
+  celebrationGif.src = 'https://media.giphy.com/media/3rgXBxX4myufzT6N2w/giphy.gif';
 
 });
 
@@ -124,7 +135,17 @@ yesBtn.addEventListener('click', () => {
 window.addEventListener('load', () => {
   const video = document.getElementById('main-video');
   if (video) {
-    video.play().catch(e => console.log("Autoplay failed:", e));
+    // Wait for enough data to be loaded before playing
+    video.addEventListener('canplaythrough', () => {
+      video.play().catch(e => console.log("Autoplay failed:", e));
+    }, { once: true });
+
+    // Fallback: try to play after a short delay if canplaythrough doesn't fire
+    setTimeout(() => {
+      if (video.paused) {
+        video.play().catch(e => console.log("Delayed play failed:", e));
+      }
+    }, 500);
   }
 });
 
