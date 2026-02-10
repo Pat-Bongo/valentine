@@ -4,7 +4,7 @@ import confetti from 'canvas-confetti';
 document.querySelector('#app').innerHTML = `
   <div class="container">
     <div class="media-container" id="media-container">
-      <video id="main-video" autoplay loop muted playsinline>
+      <video id="main-video" autoplay loop muted playsinline preload="auto">
         <source src="/media/vid.MP4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
@@ -120,11 +120,18 @@ yesBtn.addEventListener('click', () => {
 
 });
 
-// Enable sound on interaction
-// Enable sound on first interaction
+// Try to play immediately on load (muted)
+window.addEventListener('load', () => {
+  const video = document.getElementById('main-video');
+  if (video) {
+    video.play().catch(e => console.log("Autoplay failed:", e));
+  }
+});
+
+// Enable sound and force play on interaction
 function enableAudio() {
   const video = document.getElementById('main-video');
-  if (video && video.muted) {
+  if (video) {
     video.muted = false;
     video.play().catch(e => console.log("Audio play failed:", e));
   }
