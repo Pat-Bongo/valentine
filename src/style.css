@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Pacifico&display=swap');
+
+:root {
+  --primary-color: #dc143c;
+  /* Deep Crimson Red */
+  --secondary-color: #f7e7ce;
+  /* Champagne */
+  --accent-black: #000000;
+  --accent-white: #f0f0f0;
+  /* Pearl White */
+  --accent-gold: #ffd700;
+  /* Gold */
+  --bg-color: #dc143c;
+  /* Deep Crimson Base */
+  --text-color: #f7e7ce;
+  /* Champagne for Text */
+}
+
+body {
+  font-family: 'Indie Flower', cursive;
+  background: linear-gradient(135deg, var(--bg-color), #8b0000);
+  /* Crimson to Dark Red */
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 90%;
+}
+
+.media-container {
+  width: 300px;
+  height: 300px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+video,
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+h1 {
+  font-family: 'Pacifico', cursive;
+  color: var(--secondary-color);
+  /* Champagne */
+  font-size: 3rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  /* Darker shadow for contrast */
+}
+
+.buttons {
+  display: flex;
+  gap: 20px;
+  position: relative;
+  width: 100%;
+  justify-content: center;
+  min-height: 60px;
+  /* Space for buttons */
+}
+
+button {
+  padding: 15px 30px;
+  font-size: 1.5rem;
+  font-family: 'Indie Flower', cursive;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.yes-btn {
+  background-color: var(--accent-gold);
+  /* Gold */
+  color: var(--accent-black);
+  /* Black text */
+}
+
+.yes-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+}
+
+.no-btn {
+  background-color: var(--accent-white);
+  /* Pearl White */
+  color: var(--accent-black);
+  /* Black text */
+  position: relative;
+  /* Sit nicely next to Yes initially */
+  transition: all 0.3s ease;
+  /* Smooth glide */
+}
+
+.regular-text {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: normal;
+}
