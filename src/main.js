@@ -4,10 +4,7 @@ import confetti from 'canvas-confetti';
 document.querySelector('#app').innerHTML = `
   <div class="container">
     <div class="media-container" id="media-container">
-      <video id="main-video" autoplay loop muted playsinline preload="metadata" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect fill='%23f0f0f0' width='300' height='300'/%3E%3C/svg%3E">
-        <source src="/media/vid.MP4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
+      <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnBlM3lleW9yb2FjazQya29rejRzbmhpZm85Z2hkazl4eGxycTR1bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KD1D49tK4Hvl6E5q1T/giphy.gif" alt="Valentine's Day GIF" loading="eager">
     </div>
     <h1 id="main-text">Oreo will you be my valentine?</h1>
     <div class="buttons">
@@ -157,72 +154,14 @@ yesBtn.addEventListener('click', () => {
 
 });
 
-// Enhanced video loading for mobile and desktop
+// GIF preloading for better performance
 window.addEventListener('load', () => {
-  const video = document.getElementById('main-video');
-  if (!video) return;
-
-  // Detect if user is on mobile
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  // Handle video loading with multiple strategies
-  let hasStartedPlaying = false;
-
-  const attemptPlay = () => {
-    if (!hasStartedPlaying) {
-      video.play().then(() => {
-        hasStartedPlaying = true;
-      }).catch(e => {
-        console.log("Autoplay failed:", e);
-        // On mobile, user interaction is often required
-        if (isMobile) {
-          document.body.addEventListener('touchstart', () => {
-            video.play().catch(() => {});
-          }, { once: true });
-        }
-      });
-    }
-  };
-
-  // Strategy 1: Wait for loadeddata (lighter than canplaythrough)
-  video.addEventListener('loadeddata', attemptPlay, { once: true });
-
-  // Strategy 2: If video stalls, try to restart
-  video.addEventListener('stalled', () => {
-    if (!video.paused) {
-      video.load();
-      attemptPlay();
-    }
-  });
-
-  // Strategy 3: Fallback timeout
-  setTimeout(attemptPlay, 1000);
-
-  // Prevent freezing by monitoring playback
-  let lastTime = 0;
-  video.addEventListener('timeupdate', () => {
-    if (video.currentTime === lastTime && !video.paused && !video.ended) {
-      // Video appears frozen, try to restart
-      video.currentTime = 0;
-      video.play().catch(() => {});
-    }
-    lastTime = video.currentTime;
-  });
-});
-
-// Enable sound and force play on interaction
-function enableAudio() {
-  const video = document.getElementById('main-video');
-  if (video) {
-    video.muted = false;
-    video.play().catch(e => console.log("Audio play failed:", e));
+  const img = document.querySelector('#media-container img');
+  if (img && !img.complete) {
+    img.style.opacity = '0';
+    img.addEventListener('load', () => {
+      img.style.transition = 'opacity 0.3s ease-in';
+      img.style.opacity = '1';
+    }, { once: true });
   }
-  // Remove listeners after first successful trigger
-  ['click', 'mousemove', 'touchstart', 'keydown'].forEach(event =>
-    document.body.removeEventListener(event, enableAudio)
-  );
-}
-
-['click', 'mousemove', 'touchstart', 'keydown'].forEach(event =>
-  document.body.addEventListener(event, enableAudio)
-);
+});
