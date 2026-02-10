@@ -116,37 +116,98 @@ yesBtn.addEventListener('click', () => {
   // Actually, usually we remove the buttons.
 
   // Swap Media with loading state
-  mediaContainer.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #999;">Loading...</div>`;
+  mediaContainer.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #f7e7ce; font-size: 1.2rem;">Loading celebration... 🎉</div>`;
 
-  // Preload the GIF
+  // Preload the GIF with multiple fallback URLs
+  const gifUrls = [
+    'https://media.giphy.com/media/3rgXBxX4myufzT6N2w/giphy.gif',
+    'https://media1.giphy.com/media/3rgXBxX4myufzT6N2w/giphy.gif',
+    'https://media2.giphy.com/media/3rgXBxX4myufzT6N2w/giphy.gif'
+  ];
+
+  let currentUrlIndex = 0;
   const celebrationGif = new Image();
+
   celebrationGif.onload = () => {
-    mediaContainer.innerHTML = `<img src="${celebrationGif.src}" alt="Celebration GIF">`;
+    mediaContainer.innerHTML = `<img src="${celebrationGif.src}" alt="Celebration GIF" style="object-fit: cover;">`;
   };
+
   celebrationGif.onerror = () => {
-    // Fallback to alternative Giphy URL
-    celebrationGif.src = 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnRhZGQyYnV3Z2s0NWRhcTU2ZzZkYm9uN3E5ZGp5YWExa2JheXBkbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rgXBxX4myufzT6N2w/giphy.gif';
+    currentUrlIndex++;
+    if (currentUrlIndex < gifUrls.length) {
+      // Try next URL
+      celebrationGif.src = gifUrls[currentUrlIndex];
+    } else {
+      // All URLs failed, show fallback message
+      mediaContainer.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: #f7e7ce; font-size: 2rem;">🎉 💖 ✨</div>`;
+    }
   };
-  celebrationGif.src = 'https://media.giphy.com/media/3rgXBxX4myufzT6N2w/giphy.gif';
+
+  // Start loading with timeout for slow connections
+  celebrationGif.src = gifUrls[0];
+  setTimeout(() => {
+    if (!celebrationGif.complete && currentUrlIndex === 0) {
+      // If still loading after 5 seconds, try next URL
+      currentUrlIndex++;
+      if (currentUrlIndex < gifUrls.length) {
+        celebrationGif.src = gifUrls[currentUrlIndex];
+      }
+    }
+  }, 5000);
 
 });
 
-// Try to play immediately on load (muted)
+// Enhanced video loading for mobile and desktop
 window.addEventListener('load', () => {
   const video = document.getElementById('main-video');
-  if (video) {
-    // Wait for enough data to be loaded before playing
-    video.addEventListener('canplaythrough', () => {
-      video.play().catch(e => console.log("Autoplay failed:", e));
-    }, { once: true });
+  if (!video) return;
 
-    // Fallback: try to play after a short delay if canplaythrough doesn't fire
-    setTimeout(() => {
-      if (video.paused) {
-        video.play().catch(e => console.log("Delayed play failed:", e));
-      }
-    }, 500);
-  }
+  // Detect if user is on mobile
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  // Handle video loading with multiple strategies
+  let hasStartedPlaying = false;
+
+  const attemptPlay = () => {
+    if (!hasStartedPlaying) {
+      video.play().then(() => {
+        hasStartedPlaying = true;
+      }).catch(e => {
+        console.log("Autoplay failed:", e);
+        // On mobile, user interaction is often required
+        if (isMobile) {
+          document.body.addEventListener('touchstart', () => {
+            video.play().catch(() => {});
+          }, { once: true });
+        }
+      });
+    }
+  };
+
+  // Strategy 1: Wait for loadeddata (lighter than canplaythrough)
+  video.addEventListener('loadeddata', attemptPlay, { once: true });
+
+  // Strategy 2: If video stalls, try to restart
+  video.addEventListener('stalled', () => {
+    if (!video.paused) {
+      video.load();
+      attemptPlay();
+    }
+  });
+
+  // Strategy 3: Fallback timeout
+  setTimeout(attemptPlay, 1000);
+
+  // Prevent freezing by monitoring playback
+  let lastTime = 0;
+  video.addEventListener('timeupdate', () => {
+    if (video.currentTime === lastTime && !video.paused && !video.ended) {
+      // Video appears frozen, try to restart
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    }
+    lastTime = video.currentTime;
+  });
 });
 
 // Enable sound and force play on interaction
